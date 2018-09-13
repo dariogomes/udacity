@@ -11,12 +11,15 @@ with open("chicago.csv", "r") as file_read:
     data_list = list(reader)
 print("Ok!")
 
-# Vamos mudar o data_list para remover o cabeçalho dele.
 data_list = data_list[1:]
 
 # TAREFA 3
 # TODO: Crie uma função para adicionar as colunas(features) de uma lista em outra lista, na mesma ordem
+
 def column_to_list(data, index):
+    """
+    Função para adicionar as colunas(features) de uma lista em outra lista, na mesma ordem
+    """
     column_list = []
     # Dica: Você pode usar um for para iterar sobre as amostras, pegar a feature pelo seu índice, e dar append para uma lista
     for sample in data:

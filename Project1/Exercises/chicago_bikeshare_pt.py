@@ -3,6 +3,7 @@
 # Começando com os imports
 import csv
 import matplotlib.pyplot as plt
+import sys
 
 # Vamos ler os dados como uma lista
 print("Lendo o documento...")
@@ -32,6 +33,11 @@ print("\n\nTAREFA 1: Imprimindo as primeiras 20 amostras")
 # Vamos mudar o data_list para remover o cabeçalho dele.
 data_list = data_list[1:]
 
+i = 1
+while i <= 20:
+    print("Linha {}, {}".format(i, data_list[i]))
+    i += 1
+
 # Nós podemos acessar as features pelo índice
 # Por exemplo: sample[6] para imprimir gênero, ou sample[-2]
 
@@ -43,7 +49,7 @@ print("\nTAREFA 2: Imprimindo o gênero das primeiras 20 amostras")
 i = 1
 for row in data_list:
     if i <= 20:
-        print (row[6])
+        print("Linha: {}, Gênero: {}".format(i, row[6]))
         i += 1
 
 # Ótimo! Nós podemos pegar as linhas(samples) iterando com um for, e as colunas(features) por índices.
@@ -53,10 +59,19 @@ input("Aperte Enter para continuar...")
 # TAREFA 3
 # TODO: Crie uma função para adicionar as colunas(features) de uma lista em outra lista, na mesma ordem
 def column_to_list(data, index):
+    """Função para adicionar as colunas(features) de uma lista em outra lista, na mesma ordem
+    Arguments:
+        data {list} -- Lista contendo todas as colunas extraídas do arquivo CSV.
+        index {int} -- Posição da coluna a ser extraída.
+    Returns:
+        list -- Lista contendo todos os valores da coluna extraída.
+    """
     column_list = []
     # Dica: Você pode usar um for para iterar sobre as amostras, pegar a feature pelo seu índice, e dar append para uma lista
-    return column_list
+    for row in data:
+        column_list.append(row[index])
 
+    return column_list
 
 # Vamos checar com os gêneros se isso está funcionando (apenas para os primeiros 20)
 print("\nTAREFA 3: Imprimindo a lista de gêneros das primeiras 20 amostras")
@@ -74,7 +89,11 @@ input("Aperte Enter para continuar...")
 # TODO: Conte cada gênero. Você não deveria usar uma função parTODO isso.
 male = 0
 female = 0
-
+for row in column_to_list(data_list, -2):
+    if row.lower() == "female":
+        female += 1
+    elif row.lower() == "male":
+        male += 1
 
 # Verificando o resultado
 print("\nTAREFA 4: Imprimindo quantos masculinos e femininos nós encontramos")
@@ -90,8 +109,14 @@ input("Aperte Enter para continuar...")
 # TODO: Crie uma função para contar os gêneros. Retorne uma lista.
 # Isso deveria retornar uma lista com [count_male, count_female] (exemplo: [10, 15] significa 10 Masculinos, 15 Femininos)
 def count_gender(data_list):
+    """Função para contar os gêneros. Retorne uma lista."""
     male = 0
     female = 0
+    for data in data_list:
+        if data[-2] == "Male":
+            male += 1
+        elif data[-2] == "Female":
+            female += 1
     return [male, female]
 
 
@@ -110,7 +135,15 @@ input("Aperte Enter para continuar...")
 # TODO: Crie uma função que pegue o gênero mais popular, e retorne este gênero como uma string.
 # Esperamos ver "Masculino", "Feminino", ou "Igual" como resposta.
 def most_popular_gender(data_list):
+    """Função que retorna o gênero mais popular de uma lista de gêneros."""
     answer = ""
+    count_g = count_gender(data_list)
+    if count_g[0] > count_g[1]:
+        answer = "Male"
+    elif count_g[0] < count_g[1]:
+        answer = "Female"
+    else:
+        answer = "Equal"
     return answer
 
 
@@ -139,6 +172,19 @@ input("Aperte Enter para continuar...")
 # TODO: Crie um gráfico similar para user_types. Tenha certeza que a legenda está correta.
 print("\nTAREFA 7: Verifique o gráfico!")
 
+user_types_list = column_to_list(data_list, -3)
+types = ["Customer", "Dependent", "Subscriber"]
+quantity = [user_types_list.count("Customer"), user_types_list.count("Dependent"), user_types_list.count("Subscriber") ]
+
+print("Customer:{}\nDependent:{}\nSubscriber:{}".format(quantity[0], quantity[1], quantity[2]))
+
+y_pos = list(range(len(types)))
+plt.bar(y_pos, quantity)
+plt.ylabel('Quantidade')
+plt.xlabel('Tipos de usuários')
+plt.xticks(y_pos, types)
+plt.title('Quantidade por Tipo de usuário')
+plt.show(block=True)
 
 input("Aperte Enter para continuar...")
 # TAREFA 8
@@ -165,6 +211,28 @@ mean_trip = 0.
 median_trip = 0.
 
 
+# Iniciando as variáveis
+min_trip = float(trip_duration_list[0])
+max_trip = float(trip_duration_list[0])
+sum_trip = 0
+
+# Fazendo os elementos da lista virarem float
+trip_duration_list = list(map(float,trip_duration_list))
+
+# Buscando max, min e realizando a soma
+for trip in trip_duration_list:
+    sum_trip += trip
+
+# Ordenando para achar o mediana, também poderia ser usada para achar o min e max, pegando o primeiro e último elemento.
+trip_duration_list_orden = sorted(trip_duration_list)
+length_list = len(trip_duration_list)
+
+# Arredondando a saída
+max_trip = round(trip_duration_list_orden[len(trip_duration_list_orden) - 1])
+min_trip = round(trip_duration_list_orden[0])
+mean_trip = round(sum_trip/length_list)
+median_trip = int(trip_duration_list_orden[length_list // 2])
+
 print("\nTAREFA 9: Imprimindo o mínimo, máximo, média, e mediana")
 print("Min: ", min_trip, "Max: ", max_trip, "Média: ", mean_trip, "Mediana: ", median_trip)
 
@@ -179,7 +247,7 @@ input("Aperte Enter para continuar...")
 # TAREFA 10
 # Gênero é fácil porque nós temos apenas algumas opções. E quanto a start_stations? Quantas opções ele tem?
 # TODO: Verifique quantos tipos de start_stations nós temos, usando set()
-user_types = set()
+user_types = set(column_to_list(data_list, 3))
 
 print("\nTAREFA 10: Imprimindo as start stations:")
 print(len(user_types))
@@ -193,15 +261,14 @@ input("Aperte Enter para continuar...")
 # TAREFA 11
 # Volte e tenha certeza que você documenteou suas funções. Explique os parâmetros de entrada, a saída, e o que a função faz. Exemplo:
 # def new_function(param1: int, param2: str) -> list:
-      """
-      Função de exemplo com anotações.
-      Argumentos:
-          param1: O primeiro parâmetro.
-          param2: O segundo parâmetro.
-      Retorna:
-          Uma lista de valores x.
-
-      """
+"""
+Função de exemplo com anotações.
+Argumentos:
+  param1: O primeiro parâmetro.
+  param2: O segundo parâmetro.
+Retorna:
+  Uma lista de valores x.
+"""
 
 input("Aperte Enter para continuar...")
 # TAREFA 12 - Desafio! (Opcional)
